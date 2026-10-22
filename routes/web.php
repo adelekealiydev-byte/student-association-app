@@ -14,6 +14,8 @@ use App\Http\Middleware\VerifyWebhookSignature;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'Welcome')->name('home');
+Route::inertia('/help', 'Help')->name('help');
+Route::inertia('/join/expired', 'auth/JoinExpired')->name('join.expired');
 
 // Webhooks: signature-checked, no session, no CSRF
 Route::post('/webhooks/google-form', GoogleFormWebhookController::class)

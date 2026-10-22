@@ -10,13 +10,16 @@ class PasswordSetupController extends Controller
 {
     public function show(Member $member)
     {
-        abort_if($member->password_hash !== null, 403);
+        $alreadySet = $member->password_hash !== null;
 
-        if (view()->exists('auth.password-setup')) {
-            return view('auth.password-setup', ['member' => $member]);
-        }
-
-        return response('Password setup form for ' . e($member->username));
+        return \Inertia\Inertia::render('auth/PasswordSetup', [
+            'member' => [
+                'member_id' => $member->member_id,
+                'username' => $member->username,
+                'email' => $member->email,
+            ],
+            'alreadySet' => $alreadySet,
+        ]);
     }
 
     public function store(Request $request, Member $member)

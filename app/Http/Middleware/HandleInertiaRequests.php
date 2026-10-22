@@ -37,15 +37,34 @@ class HandleInertiaRequests extends Middleware
     {
         $user = $request->user();
 
+        $memberData = null;
+        if ($user) {
+            $memberData = [
+                'member_id' => $user->member_id ?? $user->id,
+                'email' => $user->email,
+                'student_number' => $user->student_number ?? null,
+                'username' => $user->username ?? $user->name ?? null,
+                'membership_status' => is_object($user->membership_status ?? null) 
+                    ? $user->membership_status->value 
+                    : ($user->membership_status ?? 'Active'),
+                'is_verified' => (bool) ($user->is_verified ?? true),
+                'roles' => method_exists($user, 'roles') 
+                    ? $user->roles()->pluck('role_name')->all() 
+                    : [],
+            ];
+        }
+
         return [
             ...parent::share($request),
             'name' => config('app.name'),
             'auth' => [
-                'user' => $user,
+                'user' => $memberData,
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
-            'currentTeam' => fn () => $user?->currentTeam ? $user->toUserTeam($user->currentTeam) : null,
-            'teams' => fn () => $user?->toUserTeams(includeCurrent: true) ?? [],
+            'flash' => [
+                'status' => fn () => $request->session()->get('status'),
+                'error' => fn () => $request->session()->get('error'),
+            ],
         ];
     }
 }

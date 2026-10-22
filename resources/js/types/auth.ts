@@ -1,19 +1,25 @@
-export type User = {
-    id: number;
-    name: string;
+export type MembershipStatus = 'Pending Invite' | 'Active' | 'Suspended' | 'Alumni' | 'Expired';
+
+export type Member = {
+    member_id: number;
     email: string;
-    avatar?: string;
-    email_verified_at: string | null;
-    /* @chisel-2fa */
-    two_factor_enabled?: boolean;
-    /* @end-chisel-2fa */
-    created_at: string;
-    updated_at: string;
+    student_number: string | null;
+    username: string | null;
+    membership_status: MembershipStatus;
+    is_verified: boolean;
+    roles: string[];
     [key: string]: unknown;
 };
 
+export type User = Member & {
+    id?: number;
+    name?: string;
+    avatar?: string;
+    email_verified_at?: string | null;
+};
+
 export type Auth = {
-    user: User;
+    user: Member | null;
 };
 
 /* @chisel-passkeys */
