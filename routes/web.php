@@ -5,7 +5,9 @@ use App\Http\Controllers\GoogleFormWebhookController;
 use App\Http\Controllers\IdCardController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\MemberProfileController;
 use App\Http\Controllers\MemberRoleController;
+use App\Http\Controllers\MemberSettingsController;
 use App\Http\Controllers\PasswordSetupController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymentWebhookController;
@@ -35,8 +37,15 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
-    Route::get('/me/card', [IdCardController::class, 'show'])->name('cards.show');
+
+    // Member Section (Profile, Dues, ID Card, Settings)
+    Route::get('/me/membership', [MemberProfileController::class, 'show'])->name('me.membership');
+    Route::patch('/me/membership', [MemberProfileController::class, 'update'])->name('me.membership.update');
+    Route::get('/me/dues', [PaymentController::class, 'showDues'])->name('me.dues');
     Route::post('/payments/dues', [PaymentController::class, 'storeDues'])->name('payments.dues');
+    Route::get('/me/card', [IdCardController::class, 'show'])->name('cards.show');
+    Route::get('/me/settings', [MemberSettingsController::class, 'show'])->name('me.settings');
+    Route::put('/me/settings/password', [MemberSettingsController::class, 'updatePassword'])->name('me.settings.password');
 
     Route::middleware('role:Admin,Secretary')->group(function () {
         Route::post('/members/invitations', [InvitationController::class, 'store'])->name('invitations.store');
